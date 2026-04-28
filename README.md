@@ -28,6 +28,8 @@ A community-maintained directory of **Better LGU** digital transparency portals 
 | Davao City, Davao Del Sur | — | [GitHub](https://github.com/johnloydlao/betterdavao) | — | 🟡 Work in Progress | [@johnloydlao](https://github.com/johnloydlao) |
 | Allen, Northern Samar | — | [GitHub](https://github.com/xandreiAThome/betterallen) | — | 🟡 Work in Progress  | [@xandreiAThome](https://github.com/xandreiAThome) |
 | Aparri, Cagayan Valley | — | [GitHub](https://github.com/egiebk/betteraparri) | — | 🟡 Work in Progress | [@egiebk](https://github.com/egiebk) |
+| San Pablo, Laguna | — | [GitHub](https://github.com/ChristiannWick/bettersanpablo) | — | 🔵 Planned  | [@ChristiannWick](https://github.com/ChristiannWick) |
+
 <!-- SYNC_LGU_TABLE_END -->
 
 > Want to add your LGU? See the [Contributing Guide](CONTRIBUTING.md).
