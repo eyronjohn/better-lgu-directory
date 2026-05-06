@@ -8,14 +8,25 @@ A community-maintained directory of **Better LGU** digital transparency portals 
 
 ## 📋 Directory
 
-<!-- Interactive Search -->
-<div class="mb-8 relative max-w-md">
-    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-        </svg>
+<!-- Interactive Search and Filters -->
+<div class="mb-8 flex flex-col md:flex-row gap-4 items-center max-w-4xl">
+    <div class="relative flex-1 w-full">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+        </div>
+        <input type="text" id="lgu-search" onkeyup="filterDirectory()" placeholder="Search LGUs by name, status, or maintainer..." class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm transition-all shadow-sm">
     </div>
-    <input type="text" id="lgu-search" onkeyup="filterDirectory()" placeholder="Search LGUs by name, status, or maintainer..." class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm transition-all shadow-sm">
+    <div class="w-full md:w-64">
+        <select id="status-filter" onchange="filterDirectory()" class="block w-full px-3 py-3 border border-gray-200 rounded-xl leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm transition-all shadow-sm cursor-pointer">
+            <option value="">All Statuses</option>
+            <option value="Active">🟢 Active</option>
+            <option value="Work in Progress">🟡 Work in Progress</option>
+            <option value="Unmaintained">🔴 Unmaintained</option>
+            <option value="Planned">🔵 Planned</option>
+        </select>
+    </div>
 </div>
 
 <div id="lgu-table-container" class="table-wrapper" markdown="1">
@@ -27,6 +38,32 @@ A community-maintained directory of **Better LGU** digital transparency portals 
 
 </div>
 
+<!-- Pagination Controls -->
+<div id="pagination-controls" class="mt-6 flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm gap-4">
+    <div class="flex flex-col sm:flex-row items-center gap-4">
+        <div class="text-sm text-gray-500 font-medium">
+            Showing <span id="showing-start" class="text-gray-900">0</span> to <span id="showing-end" class="text-gray-900">0</span> of <span id="total-results" class="text-gray-900">0</span> LGUs
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-500 font-medium">
+            <label for="items-per-page">Per page:</label>
+            <select id="items-per-page" onchange="updateItemsPerPage()" class="px-2 py-1 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 cursor-pointer">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex items-center gap-3">
+        <button id="prev-btn" onclick="changePage(-1)" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            Previous
+        </button>
+        <button id="next-btn" onclick="changePage(1)" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            Next
+        </button>
+    </div>
+</div>
+
 <!-- No Results View -->
 <div id="no-results" class="hidden py-12 text-center bg-white border border-gray-100 rounded-2xl shadow-xs animate-fade-in">
     <div class="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gray-50 rounded-full">
@@ -36,7 +73,7 @@ A community-maintained directory of **Better LGU** digital transparency portals 
     </div>
     <h3 class="text-lg font-semibold text-gray-900">No LGUs found</h3>
     <p class="mt-1 text-gray-500">We couldn't find any LGUs matching your search. Try a different keyword or LGU name.</p>
-    <button onclick="document.getElementById('lgu-search').value=''; filterDirectory();" class="mt-4 text-sm font-medium text-blue-600 hover:text-blue-700">Clear search</button>
+    <button onclick="document.getElementById('lgu-search').value=''; document.getElementById('status-filter').value=''; filterDirectory();" class="mt-4 text-sm font-medium text-blue-600 hover:text-blue-700">Clear all filters</button>
 </div>
 
 > Want to add your LGU? See the [Contributing Guide](CONTRIBUTING.md).
@@ -87,41 +124,139 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add or update an LGU entry, co
 
 Content in this repository is licensed under [CC BY 4.0](LICENSE). Templates in linked repositories carry their own licenses.
 
-<!-- Search Script -->
+<style>
+/* Custom styles for filters and pagination */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-4 { gap: 1rem; }
+.gap-3 { gap: 0.75rem; }
+.flex-1 { flex: 1 1 0%; }
+.w-full { width: 100%; }
+.max-w-4xl { max-width: 56rem; }
+.hidden { display: none; }
+.sm\:text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-gray-400 { color: #9ca3af; }
+.text-gray-500 { color: #6b7280; }
+.text-gray-700 { color: #374151; }
+.text-gray-900 { color: #111827; }
+.bg-white { background-color: #ffffff; }
+.border { border-width: 1px; }
+.border-gray-100 { border-color: #f3f4f6; }
+.border-gray-200 { border-color: #e5e7eb; }
+.border-gray-300 { border-color: #d1d5db; }
+.rounded-xl { border-radius: 0.75rem; }
+.rounded-lg { border-radius: 0.5rem; }
+.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+.cursor-pointer { cursor: pointer; }
+.disabled\:opacity-50:disabled { opacity: 0.5; }
+.disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+.transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+.transition-colors { transition-property: background-color, border-color, color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+
+@media (min-width: 640px) {
+    .sm\:flex-row { flex-direction: row; }
+}
+
+@media (min-width: 768px) {
+    .md\:flex-row { flex-direction: row; }
+    .md\:w-64 { width: 16rem; }
+}
+</style>
+
+<!-- Search and Pagination Script -->
 <script>
+let currentPage = 1;
+let itemsPerPage = 10;
+let visibleRows = [];
+
+function updateItemsPerPage() {
+    itemsPerPage = parseInt(document.getElementById("items-per-page").value);
+    currentPage = 1;
+    updatePage();
+}
+
 function filterDirectory() {
-    const input = document.getElementById("lgu-search");
-    const filter = input.value.toUpperCase();
+    const searchText = document.getElementById("lgu-search").value.toUpperCase();
+    const statusFilter = document.getElementById("status-filter").value.toUpperCase();
     const container = document.getElementById("lgu-table-container");
     const table = container.getElementsByTagName("table")[0];
     const tr = container.getElementsByTagName("tr");
     const noResults = document.getElementById("no-results");
-    let visibleCount = 0;
+    const pagination = document.getElementById("pagination-controls");
 
+    visibleRows = [];
+    
+    // Start from i=1 to skip header row
     for (let i = 1; i < tr.length; i++) {
-        let found = false;
         const td = tr[i].getElementsByTagName("td");
-        for (let j = 0; j < td.length; j++) {
-            const txtValue = td[j].textContent || td[j].innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                found = true;
-                break;
+        if (td.length === 0) continue;
+
+        const statusText = td[4].textContent.toUpperCase();
+        const statusMatch = statusFilter === "" || statusText.includes(statusFilter);
+        
+        let searchMatch = false;
+        if (statusMatch) {
+            for (let j = 0; j < td.length; j++) {
+                const txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(searchText) > -1) {
+                    searchMatch = true;
+                    break;
+                }
             }
         }
-        if (found) {
-            tr[i].style.display = "";
-            visibleCount++;
-        } else {
-            tr[i].style.display = "none";
+
+        if (statusMatch && searchMatch) {
+            visibleRows.push(tr[i]);
         }
+        tr[i].style.display = "none"; // Hide all rows initially
     }
 
-    if (visibleCount === 0) {
+    if (visibleRows.length === 0) {
         if (table) table.style.display = "none";
         noResults.classList.remove("hidden");
+        pagination.classList.add("hidden");
     } else {
         if (table) table.style.display = "";
         noResults.classList.add("hidden");
+        pagination.classList.remove("hidden");
+        currentPage = 1;
+        updatePage();
     }
 }
+
+function updatePage() {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+
+    // Reset all visible rows to hidden first (they might have been shown from previous page)
+    visibleRows.forEach(row => row.style.display = "none");
+
+    // Show rows for current page
+    for (let i = start; i < end && i < visibleRows.length; i++) {
+        visibleRows[i].style.display = "";
+    }
+
+    // Update pagination info
+    document.getElementById("showing-start").textContent = visibleRows.length > 0 ? start + 1 : 0;
+    document.getElementById("showing-end").textContent = Math.min(end, visibleRows.length);
+    document.getElementById("total-results").textContent = visibleRows.length;
+
+    // Update button states
+    document.getElementById("prev-btn").disabled = currentPage === 1;
+    document.getElementById("next-btn").disabled = end >= visibleRows.length;
+}
+
+function changePage(delta) {
+    currentPage += delta;
+    updatePage();
+    // Scroll to table top on page change
+    document.getElementById("lgu-table-container").scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Initialize
+document.addEventListener("DOMContentLoaded", function() {
+    filterDirectory();
+});
 </script>
